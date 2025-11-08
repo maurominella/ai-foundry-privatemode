@@ -217,3 +217,33 @@ resource "azurerm_cognitive_deployment" "aifoundry_deployment_gpt_4o" {
     version = "2024-11-20"
   }
 }
+
+
+# ## Create Private Endpoints for resources
+# ##
+resource "azurerm_private_endpoint" "pe_storage" {
+  provider = azurerm.workload_subscription
+  depends_on = [
+    azurerm_storage_account.storage_account
+  ]
+  name                = "${azurerm_storage_account.storage_account.name}-private-endpoint"
+  location            = var.location_agents
+  resource_group_name = var.resourcegroup_name_resources
+  subnet_id           = azurerm_subnet.resourcespe_subnet.id
+
+  private_service_connection {
+    name = "${azurerm_storage_account.storage_account.name}-private-link-service-connection"
+    private_connection_resource_id = azurerm_storage_account.storage_account.id
+    subresource_names = [
+      "blob"
+    ]
+    is_manual_connection = false
+  }
+
+  private_dns_zone_group {
+    name = "${azurerm_storage_account.storage_account.name}-dns-config"
+    private_dns_zone_ids = [
+      "/subscriptions/${var.subscription_id_infra}/resourceGroups/${var.resourcegroup_name_dns}/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
+    ]
+  }
+}
