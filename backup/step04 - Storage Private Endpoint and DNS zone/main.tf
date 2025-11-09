@@ -219,9 +219,6 @@ resource "azurerm_cognitive_deployment" "aifoundry_deployment_gpt_4o" {
 }
 
 
-# ########## Create Private DNS Zones, Links, and Private Endpoints
-# ##########
-
 # ## Create Private Endpoints for resources
 # ##
 # ## Create Private Endpoints for the Storage Account, and configure the DNS zone
@@ -249,103 +246,6 @@ resource "azurerm_private_endpoint" "pe_storage" {
     name = "${azurerm_storage_account.storage_account.name}-dns-config"
     private_dns_zone_ids = [
       "/subscriptions/${var.subscription_id_infra}/resourceGroups/${var.resourcegroup_name_dns}/providers/Microsoft.Network/privateDnsZones/privatelink.blob.core.windows.net"
-    ]
-  }
-}
-
-# ## Create Private Endpoints for CosmosDB, and configure the DNS zone
-# ##
-resource "azurerm_private_endpoint" "pe_cosmosdb" {
-  provider = azurerm.workload_subscription
-  depends_on = [
-    azurerm_private_endpoint.pe_storage,
-    azurerm_cosmosdb_account.cosmosdb
-  ]
-
-  name                = "${azurerm_cosmosdb_account.cosmosdb.name}-private-endpoint"
-  location            = var.location_agents
-  resource_group_name = var.resourcegroup_name_resources
-  subnet_id           = azurerm_subnet.resourcespe_subnet.id
-
-  private_service_connection {
-    name = "${azurerm_cosmosdb_account.cosmosdb.name}-private-link-service-connection"
-    private_connection_resource_id = azurerm_cosmosdb_account.cosmosdb.id
-    subresource_names = [
-      "Sql"
-    ]
-    is_manual_connection = false
-  }
-
-  private_dns_zone_group {
-    name = "${azurerm_cosmosdb_account.cosmosdb.name}-dns-config"
-    private_dns_zone_ids = [
-      "/subscriptions/${var.subscription_id_infra}/resourceGroups/${var.resourcegroup_name_dns}/providers/Microsoft.Network/privateDnsZones/privatelink.documents.azure.com"
-    ]
-  }
-}
-
-# ## Create Private Endpoints for AI Search, and configure the DNS zone
-# ##
-resource "azurerm_private_endpoint" "pe_aisearch" {
-  provider = azurerm.workload_subscription
-
-  depends_on = [
-    azapi_resource.ai_search,
-    azurerm_private_endpoint.pe_cosmosdb
-  ]
-
-  name                = "${azapi_resource.ai_search.name}-private-endpoint"
-  location            = var.location_agents
-  resource_group_name = var.resourcegroup_name_resources
-  subnet_id           = azurerm_subnet.resourcespe_subnet.id
-
-  private_service_connection {
-    name                           = "${azapi_resource.ai_search.name}-private-link-service-connection"
-    private_connection_resource_id = azapi_resource.ai_search.id
-    subresource_names = [
-      "searchService"
-    ]
-    is_manual_connection = false
-  }
-
-  private_dns_zone_group {
-    name = "${azapi_resource.ai_search.name}-dns-config"
-    private_dns_zone_ids = [
-      "/subscriptions/${var.subscription_id_infra}/resourceGroups/${var.resourcegroup_name_dns}/providers/Microsoft.Network/privateDnsZones/privatelink.search.windows.net"
-    ]
-  }
-}
-
-# ## Create Private Endpoints for AI Foundry, and configure the DNS zone
-# ##
-resource "azurerm_private_endpoint" "pe_aifoundry" {
-  provider = azurerm.infra_subscription
-
-  depends_on = [
-    azurerm_private_endpoint.pe_aisearch,
-    azapi_resource.ai_foundry
-  ]
-
-  name                = "${azapi_resource.ai_foundry.name}-private-endpoint"
-  location            = var.location_agents
-  resource_group_name = var.resourcegroup_name_resources
-  subnet_id           = azurerm_subnet.resourcespe_subnet.id
-
-  private_service_connection {
-    name                           = "${azapi_resource.ai_foundry.name}-private-link-service-connection"
-    private_connection_resource_id = azapi_resource.ai_foundry.id
-    subresource_names = [
-      "account"
-    ]
-    is_manual_connection = false
-  }
-
-  private_dns_zone_group {
-    name = "${azapi_resource.ai_foundry.name}-dns-config"
-    private_dns_zone_ids = [
-      "/subscriptions/${var.subscription_id_infra}/resourceGroups/${var.resourcegroup_name_dns}/providers/Microsoft.Network/privateDnsZones/privatelink.cognitiveservices.azure.com",
-      "/subscriptions/${var.subscription_id_infra}/resourceGroups/${var.resourcegroup_name_dns}/providers/Microsoft.Network/privateDnsZones/privatelink.services.ai.azure.com",
-      "/subscriptions/${var.subscription_id_infra}/resourceGroups/${var.resourcegroup_name_dns}/providers/Microsoft.Network/privateDnsZones/privatelink.openai.azure.com"
     ]
   }
 }
