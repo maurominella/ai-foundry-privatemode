@@ -71,3 +71,18 @@ variable "subnet_resourcespe_name" {
  type = string
  description = "Subnet name for the Private Endpoints of the resources"
 }
+
+## vnet and subnet address spaces
+variable "vnet_address_space" {
+  description = "The address space of the VNet"
+  type        = list(string)
+}
+
+variable "subnet1_agents_address_space" {
+  description = "The address space of the subnet"
+  type        = list(string)
+}
+variable "subnet2_agents_address_space" {
+  description = "The address space of the subnet"
+  type        = list(string)
+}
