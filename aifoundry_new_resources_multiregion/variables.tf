@@ -39,6 +39,7 @@ variable "subscription_id_networking" {
   type        = string
 }
 
+
 ## locations
 variable "location_agents" {
   description = "The name of the location to provision AI Foundry ato"
@@ -61,23 +62,23 @@ variable "location_networking" {
   type        = string
 }
 
+
 ## subnet names
 variable "subnet_agents_name" {
  type = string
  description = "Subnet name for the agents"
 }
-
 variable "subnet_resourcespe_name" {
  type = string
  description = "Subnet name for the Private Endpoints of the resources"
 }
+
 
 ## vnet and subnet address spaces
 variable "vnet_address_space" {
   description = "The address space of the VNet"
   type        = list(string)
 }
-
 variable "subnet1_agents_address_space" {
   description = "The address space of the subnet"
   type        = list(string)
