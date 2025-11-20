@@ -372,7 +372,7 @@ resource "azapi_resource" "ai_foundry_project" {
     azurerm_private_endpoint.pe_aifoundry
   ]
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects@2025-06-01"
   name                      = "project${local.prefixed_random_string}"
   parent_id                 = azapi_resource.ai_foundry.id
   location                  = var.location_agents
@@ -413,7 +413,7 @@ resource "time_sleep" "wait_project_identities" {
 resource "azapi_resource" "conn_cosmosdb" {
   provider = azapi.subscription_agents
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-06-01"
   name                      = azurerm_cosmosdb_account.cosmosdb.name
   parent_id                 = azapi_resource.ai_foundry_project.id
   schema_validation_enabled = false
@@ -442,7 +442,7 @@ resource "azapi_resource" "conn_cosmosdb" {
 resource "azapi_resource" "conn_storage" {
   provider = azapi.subscription_agents
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-06-01"
   name                      = azurerm_storage_account.storage_account.name
   parent_id                 = azapi_resource.ai_foundry_project.id
   schema_validation_enabled = false
@@ -475,7 +475,7 @@ resource "azapi_resource" "conn_storage" {
 resource "azapi_resource" "conn_aisearch" {
   provider = azapi.subscription_agents
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-06-01"
   name                      = azapi_resource.ai_search.name
   parent_id                 = azapi_resource.ai_foundry_project.id
   schema_validation_enabled = false
@@ -492,7 +492,7 @@ resource "azapi_resource" "conn_aisearch" {
       authType = "AAD"
       metadata = {
         ApiType    = "Azure"
-        ApiVersion = "2025-05-01"
+        ApiVersion = "2025-05-01-preview"
         ResourceId = azapi_resource.ai_search.id
         location   = var.location_aisearch
       }
