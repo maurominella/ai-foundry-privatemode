@@ -136,7 +136,7 @@ resource "azapi_resource" "ai_search" {
       # Search-specific properties
       replicaCount   = 1
       partitionCount = 1
-      hostingMode    = "default"
+      hostingMode    = "Default"
       semanticSearch = "disabled"
 
       # Identity-related controls
@@ -161,8 +161,8 @@ resource "azapi_resource" "ai_search" {
 ##
 resource "azapi_resource" "ai_foundry" {
   provider = azapi.subscription_agents
-  type                      = "Microsoft.CognitiveServices/accounts@2025-10-01-preview"
-  name                      = "aifoundry${local.prefixed_random_string}"
+  type                      = "Microsoft.CognitiveServices/accounts@2025-06-01"
+  name                      = "aifoundrymmvpb${local.prefixed_random_string}"
   parent_id                 = "/subscriptions/${var.subscription_id_agents}/resourceGroups/${var.resourcegroup_name_agents}"
   location                  = var.location_agents
   schema_validation_enabled = false
@@ -182,7 +182,7 @@ resource "azapi_resource" "ai_foundry" {
       allowProjectManagement = true
 
       # Set custom subdomain name for DNS names created for this Foundry resource
-      customSubDomainName = "aifoundry${local.prefixed_random_string}"
+      customSubDomainName = "aifoundrymmvpb${local.prefixed_random_string}"
 
       # Network-related controls
       # Disable public access but allow Trusted Azure Services exception
@@ -372,7 +372,7 @@ resource "azapi_resource" "ai_foundry_project" {
     azurerm_private_endpoint.pe_aifoundry
   ]
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects@2025-06-01"
   name                      = "project${local.prefixed_random_string}"
   parent_id                 = azapi_resource.ai_foundry.id
   location                  = var.location_agents
@@ -413,7 +413,7 @@ resource "time_sleep" "wait_project_identities" {
 resource "azapi_resource" "conn_cosmosdb" {
   provider = azapi.subscription_agents
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-06-01"
   name                      = azurerm_cosmosdb_account.cosmosdb.name
   parent_id                 = azapi_resource.ai_foundry_project.id
   schema_validation_enabled = false
@@ -442,7 +442,7 @@ resource "azapi_resource" "conn_cosmosdb" {
 resource "azapi_resource" "conn_storage" {
   provider = azapi.subscription_agents
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-06-01"
   name                      = azurerm_storage_account.storage_account.name
   parent_id                 = azapi_resource.ai_foundry_project.id
   schema_validation_enabled = false
@@ -475,7 +475,7 @@ resource "azapi_resource" "conn_storage" {
 resource "azapi_resource" "conn_aisearch" {
   provider = azapi.subscription_agents
 
-  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-09-01"
+  type                      = "Microsoft.CognitiveServices/accounts/projects/connections@2025-06-01"
   name                      = azapi_resource.ai_search.name
   parent_id                 = azapi_resource.ai_foundry_project.id
   schema_validation_enabled = false
@@ -492,7 +492,7 @@ resource "azapi_resource" "conn_aisearch" {
       authType = "AAD"
       metadata = {
         ApiType    = "Azure"
-        ApiVersion = "2025-05-01"
+        ApiVersion = "2025-05-01-preview"
         ResourceId = azapi_resource.ai_search.id
         location   = var.location_aisearch
       }
